@@ -40,7 +40,7 @@ void setup() {
   pinMode(debugLed, OUTPUT);
   digitalWrite(debugLed, LOW);
 
-//  pinMode(button, INPUT_PULLDOWN);
+  pinMode(button, INPUT_PULLUP);
   
   // Initialize sensor pins as input
   for (int i = 0; i < numSensors; i++) {
@@ -53,14 +53,18 @@ void setup() {
 //  digitalWrite(debugLed, LOW);
 //  delay(1000);
 
-  calibrateIRS();
+//  calibrateIRS();
 }
 
 void loop() {
   // Calculate the position of the line
   linePosition = readSensors();
-  
+
+//  Serial.print("Button: ");
 //  Serial.println(digitalRead(button));
+
+  if(!digitalRead(button))
+    calibrateIRS();
 
   // Call the PID function to calculate the control signal
   float control = calculatePID(linePosition);
