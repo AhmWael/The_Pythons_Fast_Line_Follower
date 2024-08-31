@@ -33,7 +33,7 @@ bool debug = true;
 void setup() {
   Serial.begin(115200);
 
-  // Initialize motor pins as output
+  // Initialize motor pins channels
   ledcAttachChannel(leftMotor, 5000, 8, leftMotorChannel);
   ledcAttachChannel(rightMotor, 5000, 8, rightMotorChannel);
 
@@ -47,29 +47,33 @@ void setup() {
     pinMode(sensorPins[i], INPUT);
   }
   analogReadResolution(12);
-}
 
-void loop() {
 //  digitalWrite(debugLed, HIGH);
 //  delay(1000);
 //  digitalWrite(debugLed, LOW);
 //  delay(1000);
+
+  calibrateIRS();
+}
+
+void loop() {
   // Calculate the position of the line
   linePosition = readSensors();
+  
 //  Serial.println(digitalRead(button));
-//
-//  // Call the PID function to calculate the control signal
-//  float control = calculatePID(linePosition);
-//
+
+  // Call the PID function to calculate the control signal
+  float control = calculatePID(linePosition);
+
 //  // Use the control value to adjust motor speed
 //  moveMotors(control);  
 
-  // Output the position and control value for debugging
-//  if(debug){
-//    Serial.print("Position: ");
-//    Serial.print(linePosition);
-//    Serial.print("    Control: ");
-//    Serial.println(control);
-//  }
+//// Output the position and control value for debugging
+  if(debug){
+    Serial.print("Position: ");
+    Serial.print(linePosition);
+    Serial.print("    Control: ");
+    Serial.println(control);
+  }
 
 }

@@ -5,22 +5,25 @@ long readSensors() {
 
   /***** Read sensors & calculate Weighted sum *****/ 
   for (int i = 0; i < numSensors; i++) {
-    sensorValues[i] = analogRead(sensorPins[i]);
+    sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
     weightedSum += sensorValues[i] * (i - (numSensors - 1) / 2); // Multiply sensor reading by its index offset by the center
     totalValue += sensorValues[i];
   }
-//  sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
-  for(int i = 0; i < numSensors; i++){
-    Serial.print(i);
-    Serial.print(" :  ");
-    Serial.print(sensorValues[i]);
-    Serial.print("  ");
+
+  if(debug){
+    for(int i = 0; i < numSensors; i++){
+      Serial.print(i);
+      Serial.print(" :  ");
+      Serial.print(sensorValues[i]);
+      //Serial.print(map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000));
+      Serial.print("  ");
+    }
+    Serial.println();
   }
-  Serial.println();
 
   /***** Calculate position *****/ 
   if (totalValue > 0) {
-    return weightedSum / totalValue; // Normalized position
+    return weightedSum; // Normalized position  / totalValue
   } else {
     return 0; // No line detected
   }
@@ -28,6 +31,12 @@ long readSensors() {
 
 void calibrateIRS(){
   Serial.println("Starting Calibration!");
+  digitalWrite(debugLed, HIGH);
+  delay(500);
+  digitalWrite(debugLed, LOW);
+  delay(500);
+  digitalWrite(debugLed, HIGH);
+  
   for (int i = 0; i < numSensors; i++) {
     sensorValues[i] = analogRead(sensorPins[i]);
     sensorOffsets[i][0] = sensorValues[i];
@@ -44,7 +53,9 @@ void calibrateIRS(){
         sensorOffsets[i][1] = sensorValues[i];
     }
   }
+  digitalWrite(debugLed, LOW);
   Serial.println("Calibration Ended!");
+  
   Serial.println("Sensors Offsets: ");
   for(int i = 0; i < numSensors; i++){
     Serial.print(i);
