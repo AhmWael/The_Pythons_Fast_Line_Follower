@@ -31,6 +31,8 @@ long readSensors() {
 
 void calibrateIRS(){
   Serial.println("Starting Calibration!");
+  ledcWriteChannel(leftMotorChannel, 0);
+  ledcWriteChannel(rightMotorChannel, 0);
   digitalWrite(debugLed, HIGH);
   delay(500);
   digitalWrite(debugLed, LOW);
@@ -51,7 +53,13 @@ void calibrateIRS(){
         sensorOffsets[i][0] = sensorValues[i];
       if(sensorValues[i] > sensorOffsets[i][1])
         sensorOffsets[i][1] = sensorValues[i];
+      Serial.print(i);
+      Serial.print(" :  ");
+      Serial.print(sensorValues[i]);
+      //Serial.print(map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000));
+      Serial.print("  ");
     }
+    Serial.println();
   }
   digitalWrite(debugLed, LOW);
   Serial.println("Calibration Ended!");

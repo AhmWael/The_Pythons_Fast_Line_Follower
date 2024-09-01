@@ -7,7 +7,7 @@ long linePosition = 0; // Calculated position
 int sensorOffsets[13][2];
 
 /***** PID constants *****/ 
-float Kp = 0.0; // Proportional gain
+float Kp = 0.02; // Proportional gain
 float Ki = 0.0; // Integral gain
 float Kd = 0.0; // Derivative gain
 
@@ -15,15 +15,16 @@ float Kd = 0.0; // Derivative gain
 long lastPosition = 0; 
 float integral = 0; 
 long lastError = 0; 
+float control;
 
 /***** Motors pins *****/
 #define leftMotor 22
-#define rightMotor 21
+#define rightMotor 23
 
 #define leftMotorChannel 0
 #define rightMotorChannel 1
 
-#define baseSpeed 50
+#define baseSpeed 115
 
 #define button 5
 #define debugLed 9
@@ -57,6 +58,9 @@ void setup() {
 }
 
 void loop() {
+//  ledcWriteChannel(leftMotorChannel, 110);
+//  ledcWriteChannel(rightMotorChannel, 110);
+  
   // Calculate the position of the line
   linePosition = readSensors();
 
@@ -67,10 +71,10 @@ void loop() {
     calibrateIRS();
 
   // Call the PID function to calculate the control signal
-  float control = calculatePID(linePosition);
+  control = calculatePID(linePosition);
 
-//  // Use the control value to adjust motor speed
-//  moveMotors(control);  
+  // Use the control value to adjust motor speed
+  moveMotors(control);  
 
 //// Output the position and control value for debugging
   if(debug){
