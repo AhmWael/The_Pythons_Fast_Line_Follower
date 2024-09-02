@@ -1,13 +1,13 @@
 unsigned long long int timer;
 
-const int numSensors = 13; // Number of sensors
-int sensorPins[numSensors] = {13, 14, 27, 26, 25, 33, 32, 35, 34, 39, 36, 15, 4}; // Sensor pins
+const int numSensors = 11; // Number of sensors
+int sensorPins[numSensors] = { 14, 27, 26, 25, 33, 32, 35, 34, 39, 36, 15}; // Sensor pins
 int sensorValues[numSensors]; // Array to store sensor readings
 long linePosition = 0; // Calculated position
-int sensorOffsets[13][2];
+int sensorOffsets[11][2];
 
 /***** PID constants *****/ 
-float Kp = 0.02; // Proportional gain
+float Kp = 0.18; // Proportional gain
 float Ki = 0.0; // Integral gain
 float Kd = 0.0; // Derivative gain
 
@@ -24,7 +24,7 @@ float control;
 #define leftMotorChannel 0
 #define rightMotorChannel 1
 
-#define baseSpeed 115
+#define baseSpeed 120
 
 #define button 5
 #define debugLed 9
@@ -54,7 +54,8 @@ void setup() {
 //  digitalWrite(debugLed, LOW);
 //  delay(1000);
 
-//  calibrateIRS();
+calibrateIRS();
+
 }
 
 void loop() {
