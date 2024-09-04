@@ -7,7 +7,7 @@ long linePosition = 0; // Calculated position
 int sensorOffsets[11][2];
 
 /***** PID constants *****/ 
-float Kp = 0.18; // Proportional gain
+float Kp = 0.13; // Proportional gain
 float Ki = 0.0; // Integral gain
 float Kd = 0.0; // Derivative gain
 
@@ -24,16 +24,31 @@ float control;
 #define leftMotorChannel 0
 #define rightMotorChannel 1
 
-#define baseSpeed 120
+#define baseSpeed 105
+#define highSpeed 120
 
 #define button 5
 #define debugLed 9
 
 bool debug = true;
+#include "BluetoothSerial.h"
 
+String device_name = "ESP32-BT-Slave";
+
+// Check if Bluetooth is available
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
+// Check Serial Port Profile
+#if !defined(CONFIG_BT_SPP_ENABLED)
+#error Serial Port Profile for Bluetooth is not available or not enabled. It is only available for the ESP32 chip.
+#endif
+
+BluetoothSerial SerialBT;
 void setup() {
   Serial.begin(115200);
-
+  SerialBT.begin(device_name);  //Bluetooth device name
   // Initialize motor pins channels
   ledcAttachChannel(leftMotor, 5000, 8, leftMotorChannel);
   ledcAttachChannel(rightMotor, 5000, 8, rightMotorChannel);
@@ -76,7 +91,13 @@ void loop() {
 
   // Use the control value to adjust motor speed
   moveMotors(control);  
-
+if (SerialBT.available()) {
+    //auto received=;
+    String rec = (String)SerialBT.readStringUntil('\n');
+    Serial.println(rec);
+    Serial.write(SerialBT.read());
+    delay(500);
+  }
 //// Output the position and control value for debugging
   if(debug){
     Serial.print("Position: ");

@@ -3,8 +3,8 @@ void moveMotors(int control){
   int leftSpeed = baseSpeed + control;
   int rightSpeed = baseSpeed - control;
 
-  leftSpeed = constrain(leftSpeed, 0, 150);
-  rightSpeed = constrain(rightSpeed, 0, 150);
+  leftSpeed = constrain(leftSpeed, 0, highSpeed);
+  rightSpeed = constrain(rightSpeed, 0, highSpeed);
 
   ledcWriteChannel(leftMotorChannel, leftSpeed);
   ledcWriteChannel(rightMotorChannel, rightSpeed);
