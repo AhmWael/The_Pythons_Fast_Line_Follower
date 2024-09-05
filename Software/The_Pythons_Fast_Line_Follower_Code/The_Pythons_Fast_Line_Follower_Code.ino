@@ -24,8 +24,8 @@ float control;
 #define leftMotorChannel 0
 #define rightMotorChannel 1
 
-#define baseSpeed 105
-#define highSpeed 120
+int baseSpeed=105;
+int highSpeed=120;
 
 #define button 5
 #define debugLed 9
@@ -95,8 +95,40 @@ if (SerialBT.available()) {
     //auto received=;
     String rec = (String)SerialBT.readStringUntil('\n');
     Serial.println(rec);
-    Serial.write(SerialBT.read());
-    delay(500);
+    char fun=rec[0];
+    String after=rec.substring(1,rec.length()-1);
+    float val=after.toFloat();
+    if(fun=='S'){
+      ledcWriteChannel(leftMotorChannel, 0);
+  ledcWriteChannel(rightMotorChannel, 0);
+  delay(5000);
+      }
+     else if(fun=='P'){
+      Kp=val;
+      Serial.printf("Kp: %f\n",Kp);
+      }
+      else if(fun=='I'){
+      Ki=val;
+      Serial.printf("Ki: %f\n",Ki);
+      }
+      else if(fun=='D'){
+      Kd=val;
+      Serial.printf("Kd: %f\n",Kd);
+      }
+      else if(fun=='M'){
+      highSpeed=(int)val;
+      Serial.printf("high: %f\n",highSpeed);
+      }
+      else if(fun=='B'){
+      baseSpeed=(int)val;
+      Serial.printf("base%f\n",baseSpeed);
+      }
+    //val+=rec[rec.length()-1]/1000.0;
+    //Serial.print("Float: ");
+    //Serial.println(val);
+    //Serial.write(SerialBT.read());
+    //delay(500);
+    //if(rec[0]=='S')
   }
 //// Output the position and control value for debugging
   if(debug){
