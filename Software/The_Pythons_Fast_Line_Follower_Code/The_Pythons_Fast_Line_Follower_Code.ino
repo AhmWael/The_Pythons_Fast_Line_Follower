@@ -94,38 +94,52 @@ void loop() {
 if (SerialBT.available()) {
     //auto received=;
     String rec = (String)SerialBT.readStringUntil('\n');
-    Serial.println(rec);
+    //Serial.println(rec);
     char fun=rec[0];
-    String after=rec.substring(1,rec.length()-1);
-    float val=after.toFloat();
+    String after=rec.substring(1,rec.length());
+    //Serial.println(after);
+    float num = 0, factor = 1;
+    int decimal_flag = 0;
+    for (int i = 0; i<after.length(); i++) {
+        if (after[i] == '.') {
+            decimal_flag = 1;
+            continue;
+        }
+        if (decimal_flag) {
+            factor /= 10;
+            num += (after[i] - '0') * factor;
+        } else {
+            num = num * 10 + (after[i] - '0');
+        }
+    }
+    //float val=after.toFloat();
     if(fun=='S'){
-      ledcWriteChannel(leftMotorChannel, 0);
-  ledcWriteChannel(rightMotorChannel, 0);
-  delay(5000);
+      highSpeed=0;
+  //delay(5000);
       }
      else if(fun=='P'){
-      Kp=val;
-      Serial.printf("Kp: %f\n",Kp);
+      Kp=num;
+      //Serial.printf("Kp: %f\n",Kp);
       }
       else if(fun=='I'){
-      Ki=val;
-      Serial.printf("Ki: %f\n",Ki);
+      Ki=num;
+      //Serial.printf("Ki: %f\n",Ki);
       }
       else if(fun=='D'){
-      Kd=val;
-      Serial.printf("Kd: %f\n",Kd);
+      Kd=num;
+      //Serial.printf("Kd: %f\n",Kd);
       }
       else if(fun=='M'){
-      highSpeed=(int)val;
-      Serial.printf("high: %f\n",highSpeed);
+      highSpeed=(int)num;
+      //Serial.printf("high: %d\n",highSpeed);
       }
       else if(fun=='B'){
-      baseSpeed=(int)val;
-      Serial.printf("base%f\n",baseSpeed);
+      baseSpeed=(int)num;
+      //Serial.printf("base: %d\n",baseSpeed);
       }
     //val+=rec[rec.length()-1]/1000.0;
     //Serial.print("Float: ");
-    //Serial.println(val);
+    //Serial.printf("num: %f\n",num);
     //Serial.write(SerialBT.read());
     //delay(500);
     //if(rec[0]=='S')
