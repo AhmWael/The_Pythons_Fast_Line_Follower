@@ -30,13 +30,14 @@ float control;
 #define rightMotorChannel 1
 
 int baseSpeed=105;
-int highSpeed=150;
+int highSpeed=0;
 
 #define button 5
 #define button2 17
 #define debugLed 9
 
 bool debug = true;
+
 #include "BluetoothSerial.h"
 
 String device_name = "ESP32-BT-Slave";
