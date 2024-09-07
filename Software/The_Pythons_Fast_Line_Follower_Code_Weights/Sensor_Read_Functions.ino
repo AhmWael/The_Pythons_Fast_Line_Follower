@@ -1,7 +1,16 @@
 /***** Read Sensors & Calculate Position *****/ 
 long lastweightSum=0;
-int sensorWeights[numSensors]={85,80,70,40,30,30,30,40,70,80,85};
 long readSensors() {
+  sensorWeights[0]=-IR1;
+  sensorWeights[numSensors-1]=IR1;
+  sensorWeights[1]=-IR2;
+  sensorWeights[numSensors-2]=IR2;
+  sensorWeights[2]=-IR3;
+  sensorWeights[numSensors-3]=IR3;
+  sensorWeights[3]=-IR4;
+  sensorWeights[numSensors-4]=IR4;
+  sensorWeights[4]=-IR5;
+  sensorWeights[numSensors-5]=IR5;
   long weightedSum = 0;
   int totalValue = 0;
   int max_ir_constant=100;
@@ -9,6 +18,7 @@ long readSensors() {
   for (int i = 0; i < numSensors; i++) {
     sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
+    Serial.printf("SensorWeight[%d]: %d\n",i,sensorWeights[i]);
     if(sensorValues[i]>400)
       sensorValues[i]=sensorWeights[i];
     else
@@ -36,9 +46,9 @@ long readSensors() {
   int half=(numSensors - 1) / 2;
   if (left!=-1 || right!=-1){
     if(left!=-1)
-      weightedSum += sensorValues[left] * (left - half);
+      weightedSum += sensorValues[left] ;
     if(right!=-1)
-       weightedSum += sensorValues[right] * (right - half); // Multiply sensor reading by its index offset by the center
+       weightedSum += sensorValues[right] ; // Multiply sensor reading by its index offset by the center
     //totalValue = sensorValues[left]+sensorValues[right];
     lastweightSum=weightedSum;
     }

@@ -5,7 +5,12 @@ int sensorPins[numSensors] = { 14, 27, 26, 25, 33, 32, 35, 34, 39, 36, 15}; // S
 int sensorValues[numSensors]; // Array to store sensor readings
 long linePosition = 0; // Calculated position
 int sensorOffsets[numSensors][2];
-
+int IR1=85;
+int IR2=80;
+int IR3=70;
+int IR4=40;
+int IR5=30;
+int sensorWeights[numSensors]={-IR1,-IR2,-IR3,-IR4,-IR5,0,IR5,IR4,IR3,IR2,IR1};
 /***** PID constants *****/ 
 float Kp = 0.3; // Proportional gain
 float Ki = 0.0; // Integral gain
@@ -137,6 +142,21 @@ if (SerialBT.available()) {
       else if(fun=='B'){
       baseSpeed=(int)num;
       //Serial.printf("base: %d\n",baseSpeed);
+      }
+      else if(fun=='Q'){
+      IR1=(int)num;
+      }
+      else if(fun=='W'){
+      IR2=(int)num;
+      }
+      else if(fun=='E'){
+      IR3=(int)num;
+      }
+      else if(fun=='R'){
+      IR4=(int)num;
+      }
+      else if(fun=='T'){
+      IR5=(int)num;
       }
     //val+=rec[rec.length()-1]/1000.0;
     //Serial.print("Float: ");
