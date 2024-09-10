@@ -1,20 +1,21 @@
 unsigned long long int timer;
 
-const int numSensors = 11; // Number of sensors
-int sensorPins[numSensors] = { 14, 27, 26, 25, 33, 32, 35, 34, 39, 36, 15}; // Sensor pins 13 / 4
+const int numSensors = 13; // Number of sensors
+int sensorPins[numSensors] = { 13,14, 27, 26, 25, 33, 32, 35, 34, 39, 36, 15,4}; // Sensor pins 13 / 4
 int sensorValues[numSensors]; // Array to store sensor readings
 long linePosition = 0; // Calculated position
 int sensorOffsets[numSensors][2];
-int IR1=85;
-int IR2=80;
-int IR3=70;
-int IR4=40;
-int IR5=30;
-int sensorWeights[numSensors]={-IR1,-IR2,-IR3,-IR4,-IR5,0,IR5,IR4,IR3,IR2,IR1};
+int IR1=400;
+int IR2=400;
+int IR3=399;
+int IR4=399;
+int IR5=15;
+int IR6=5;
+int sensorWeights[numSensors]={-IR1,-IR2,-IR3,-IR4,-IR5,-IR6,0,IR6,IR5,IR4,IR3,IR2,IR1};
 /***** PID constants *****/ 
-float Kp = 0.3; // Proportional gain
+float Kp = 1; // Proportional gain
 float Ki = 0.0; // Integral gain
-float Kd = 0.0; // Derivative gain
+float Kd = 3; // Derivative gain
 
 /***** PID variables *****/ 
 long lastPosition = 0; 
@@ -23,20 +24,25 @@ long lastError = 0;
 float control;
 
 /***** Motors pins *****/
-#define leftMotor 22
-#define rightMotor 21
+#define leftMotor 21
+#define rightMotor 23
+#define leftMotorIN 19
+#define rightMotorIN 22
+
+#define leftMotorIN2 18
+#define rightMotorIN2 16
 
 #define leftMotorChannel 0
 #define rightMotorChannel 1
 
-int baseSpeed=105;
-int highSpeed=0;
+int baseSpeed=225;
+int highSpeed=0;//240
 
 #define button 5
 #define button2 17
 #define debugLed 9
 
-bool debug = true;
+bool debug = false;
 
 #include "BluetoothSerial.h"
 
@@ -56,6 +62,10 @@ BluetoothSerial SerialBT;
 void setup() {
   Serial.begin(115200);
   SerialBT.begin(device_name);  //Bluetooth device name
+  pinMode(leftMotorIN,OUTPUT);
+  pinMode(rightMotorIN,OUTPUT);
+  pinMode(leftMotorIN2,OUTPUT);
+  pinMode(rightMotorIN2,OUTPUT);
   // Initialize motor pins channels
   ledcAttachChannel(leftMotor, 5000, 8, leftMotorChannel);
   ledcAttachChannel(rightMotor, 5000, 8, rightMotorChannel);
@@ -71,6 +81,8 @@ void setup() {
   }
   analogReadResolution(12);
 
+  digitalWrite(leftMotorIN2, LOW);
+  digitalWrite(rightMotorIN2, LOW);
 //  digitalWrite(debugLed, HIGH);
 //  delay(1000);
 //  digitalWrite(debugLed, LOW);
@@ -98,6 +110,7 @@ void loop() {
 
   // Use the control value to adjust motor speed
   moveMotors(control);  
+  
 if (SerialBT.available()) {
     //auto received=;
     String rec = (String)SerialBT.readStringUntil('\n');
@@ -159,6 +172,9 @@ if (SerialBT.available()) {
       else if(fun=='T'){
       IR5=(int)num;
       }
+      else if(fun=='Y'){
+      IR6=(int)num;
+      }
     //val+=rec[rec.length()-1]/1000.0;
     //Serial.print("Float: ");
     //Serial.printf("num: %f\n",num);
@@ -166,6 +182,7 @@ if (SerialBT.available()) {
     //delay(500);
     //if(rec[0]=='S')
   }
+  
 //// Output the position and control value for debugging
   if(debug){
     Serial.print("Position: ");

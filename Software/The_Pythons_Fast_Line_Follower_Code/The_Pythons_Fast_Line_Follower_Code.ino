@@ -31,7 +31,7 @@ int highSpeed=150;
 #define button2 17
 #define debugLed 9
 
-bool debug = true;
+bool debug = false;
 #include "BluetoothSerial.h"
 
 String device_name = "ESP32-BT-Slave";

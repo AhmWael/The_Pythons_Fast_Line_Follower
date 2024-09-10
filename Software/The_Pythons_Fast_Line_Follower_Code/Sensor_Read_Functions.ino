@@ -9,7 +9,7 @@ long readSensors() {
   for (int i = 0; i < numSensors; i++) {
     sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
-    if(sensorValues[i]>400)
+    if(sensorValues[i]>500)
       sensorValues[i]=sensorWeights[i];
     else
       sensorValues[i]=0;

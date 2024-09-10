@@ -11,18 +11,21 @@ long readSensors() {
   sensorWeights[numSensors-4]=IR4;
   sensorWeights[4]=-IR5;
   sensorWeights[numSensors-5]=IR5;
+  sensorWeights[5]=-IR6;
+  sensorWeights[numSensors-6]=IR6;
+  
   long weightedSum = 0;
   int totalValue = 0;
   int max_ir_constant=100;
   int flagL=0;
   int flagR=0;
   /** Read sensors & calculate Weighted sum **/ 
-  for (int i = 0; i < (numSensors/2)+1; i++) {
+  for (int i = 0; i <= (numSensors/2); i++) {
     sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
     if(debug)
       Serial.printf("SensorWeight[%d]: %d\n",i,sensorWeights[i]);
-    if(sensorValues[i]>400){
+    if(sensorValues[i]>500){
       flagL=1;
       weightedSum +=sensorWeights[i];
       break;
@@ -34,7 +37,7 @@ long readSensors() {
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
     if(debug)
       Serial.printf("SensorWeight[%d]: %d\n",i,sensorWeights[i]);
-    if(sensorValues[i]>400){
+    if(sensorValues[i]>500){
       flagR=1;
       weightedSum +=sensorWeights[i]; 
       break;
@@ -71,6 +74,8 @@ void calibrateIRS(){
   digitalWrite(debugLed, LOW);
   delay(500);
   digitalWrite(debugLed, HIGH);
+
+  
   
   for (int i = 0; i < numSensors; i++) {
     sensorValues[i] = analogRead(sensorPins[i]);
@@ -80,6 +85,14 @@ void calibrateIRS(){
   timer = millis();
   while(millis() - timer < 5000){
     Serial.println("Calibrating");
+
+    digitalWrite(leftMotorIN, LOW);
+    digitalWrite(leftMotorIN2, HIGH);
+    ledcWriteChannel(leftMotorChannel, 200);
+    digitalWrite(rightMotorIN, HIGH);
+    digitalWrite(rightMotorIN2, LOW);
+    ledcWriteChannel(rightMotorChannel, 200);
+    
     for(int i = 0; i < numSensors; i++){
       sensorValues[i] = analogRead(sensorPins[i]);
       if(sensorValues[i] < sensorOffsets[i][0])
@@ -94,6 +107,13 @@ void calibrateIRS(){
     }
     Serial.println();
   }
+  ledcWriteChannel(leftMotorChannel, 255);
+  digitalWrite(leftMotorIN, LOW);
+  digitalWrite(leftMotorIN2, LOW);
+  ledcWriteChannel(rightMotorChannel, 255);
+  digitalWrite(rightMotorIN, LOW);
+  digitalWrite(rightMotorIN2, LOW);
+  
   digitalWrite(debugLed, LOW);
   Serial.println("Calibration Ended!");
   
