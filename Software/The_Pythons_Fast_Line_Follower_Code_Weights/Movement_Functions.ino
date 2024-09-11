@@ -86,12 +86,12 @@ void moveMotors(int control) {
   }
 */
 
-  if (debug) {
+  #ifdef debug
     if (leftSpeed < rightSpeed)
       Serial.println("LEFT");
     else if (leftSpeed > rightSpeed)
       Serial.println("RIGHT");
     else
       Serial.println("FORWARD");
-  }
+  #endif
 }

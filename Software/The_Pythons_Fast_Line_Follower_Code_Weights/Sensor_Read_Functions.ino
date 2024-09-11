@@ -23,8 +23,9 @@ long readSensors() {
   for (int i = 0; i <= (numSensors/2); i++) {
     sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
-    if(debug)
+    #ifdef debug
       Serial.printf("SensorWeight[%d]: %d\n",i,sensorWeights[i]);
+    #endif
     if(sensorValues[i]>500){
       flagL=1;
       weightedSum +=sensorWeights[i];
@@ -35,8 +36,9 @@ long readSensors() {
   for (int i = numSensors-1; i >= numSensors/2; i--) {
     sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
-    if(debug)
+    #ifdef debug
       Serial.printf("SensorWeight[%d]: %d\n",i,sensorWeights[i]);
+    #endif
     if(sensorValues[i]>500){
       flagR=1;
       weightedSum +=sensorWeights[i]; 
@@ -51,7 +53,7 @@ long readSensors() {
     lastweightSum=weightedSum;
     }
    
-  if(debug){
+  #ifdef debug
     Serial.printf("weightedSum : %d\n", weightedSum);    
     for(int i = 0; i < numSensors; i++){
       Serial.print(i);
@@ -61,7 +63,7 @@ long readSensors() {
       Serial.print("  ");
     }
     Serial.println();
-  }
+  #endif
   return weightedSum;
 }
 
