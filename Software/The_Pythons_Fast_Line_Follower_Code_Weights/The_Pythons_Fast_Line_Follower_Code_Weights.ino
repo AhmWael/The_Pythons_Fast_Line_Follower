@@ -1,5 +1,5 @@
 unsigned long long int timer;
-
+int threshold = 1500;
 const int numSensors = 13; // Number of sensors
 int sensorPins[numSensors] = { 13, 14, 27, 26, 25, 33, 32, 35, 34, 39, 36, 15, 4}; // Sensor pins 13 / 4
 int sensorValues[numSensors]; // Array to store sensor readings
@@ -15,7 +15,7 @@ int sensorWeights[numSensors] = { -IR1, -IR2, -IR3, -IR4, -IR5, -IR6, 0, IR6, IR
 /***** PID constants *****/
 float Kp = 1; // Proportional gain
 float Ki = 0.0; // Integral gain
-float Kd = 3; // Derivative gain
+float Kd = 0; // Derivative gain
 
 /***** PID variables *****/
 long lastPosition = 0;
@@ -185,12 +185,12 @@ void loop() {
   }
 
   // Output the position and control value for debugging
-  #ifdef debug
-    Serial.print("Position: ");
-    Serial.print(linePosition);
-    Serial.print("    Control: ");
-    Serial.println(control);
-  #endif
-  
+#ifdef debug
+  Serial.print("Position: ");
+  Serial.print(linePosition);
+  Serial.print("    Control: ");
+  Serial.println(control);
+#endif
+
 
 }

@@ -17,7 +17,7 @@ void moveMotors(int control) {
   //    leftSpeed = baseSpeed + control;
   //    rightSpeed = baseSpeed - control;
   //  }
-  if(highSpeed==0){
+  if (highSpeed == 0) {
     ledcWriteChannel(leftMotorChannel, 255);
     digitalWrite(leftMotorIN, LOW);
     digitalWrite(leftMotorIN2, LOW);
@@ -30,8 +30,8 @@ void moveMotors(int control) {
 
   leftSpeed = constrain(leftSpeed, -highSpeed, highSpeed);
   rightSpeed = constrain(rightSpeed, -highSpeed, highSpeed);
-  
-  if (leftSpeed <= 0 && abs(linePosition) >= IR2) {
+
+  if (leftSpeed <= 0 && abs(linePosition) >= IR1) {
     digitalWrite(leftMotorIN, LOW);
     digitalWrite(leftMotorIN2, HIGH);
     ledcWriteChannel(leftMotorChannel, abs(leftSpeed));
@@ -47,7 +47,7 @@ void moveMotors(int control) {
     ledcWriteChannel(leftMotorChannel, abs(leftSpeed));
   }
 
-  if (rightSpeed <= 0 && abs(linePosition) >= IR2) {
+  if (rightSpeed <= 0 && abs(linePosition) >= IR1) {
     digitalWrite(rightMotorIN, LOW);
     digitalWrite(rightMotorIN2, HIGH);
     ledcWriteChannel(rightMotorChannel, abs(rightSpeed));
@@ -55,7 +55,7 @@ void moveMotors(int control) {
   else if (rightSpeed <= 0) {
     ledcWriteChannel(rightMotorChannel, 255);
     digitalWrite(rightMotorIN, LOW);
-    digitalWrite(rightMotorIN2, LOW); 
+    digitalWrite(rightMotorIN2, LOW);
   }
   else {
     digitalWrite(rightMotorIN, HIGH);
@@ -63,35 +63,35 @@ void moveMotors(int control) {
     ledcWriteChannel(rightMotorChannel, abs(rightSpeed));
   }
 
-/*
-  leftSpeed = constrain(leftSpeed, 0, highSpeed);
-  rightSpeed = constrain(rightSpeed, 0, highSpeed);
-  if (leftSpeed <= 0) {
-    ledcWriteChannel(leftMotorChannel, 255);
-    digitalWrite(leftMotorIN, LOW);
-  }
-  else {
-    digitalWrite(leftMotorIN, HIGH);
-    ledcWriteChannel(leftMotorChannel, leftSpeed);
-  }
+  /*
+    leftSpeed = constrain(leftSpeed, 0, highSpeed);
+    rightSpeed = constrain(rightSpeed, 0, highSpeed);
+    if (leftSpeed <= 0) {
+      ledcWriteChannel(leftMotorChannel, 255);
+      digitalWrite(leftMotorIN, LOW);
+    }
+    else {
+      digitalWrite(leftMotorIN, HIGH);
+      ledcWriteChannel(leftMotorChannel, leftSpeed);
+    }
 
-  if (rightSpeed <= 0) {
+    if (rightSpeed <= 0) {
 
-    ledcWriteChannel(rightMotorChannel, 255);
-    digitalWrite(rightMotorIN, LOW);
-  }
-  else {
-    ledcWriteChannel(rightMotorChannel, rightSpeed);
-    digitalWrite(rightMotorIN, HIGH);
-  }
-*/
+      ledcWriteChannel(rightMotorChannel, 255);
+      digitalWrite(rightMotorIN, LOW);
+    }
+    else {
+      ledcWriteChannel(rightMotorChannel, rightSpeed);
+      digitalWrite(rightMotorIN, HIGH);
+    }
+  */
 
-  #ifdef debug
-    if (leftSpeed < rightSpeed)
-      Serial.println("LEFT");
-    else if (leftSpeed > rightSpeed)
-      Serial.println("RIGHT");
-    else
-      Serial.println("FORWARD");
-  #endif
+#ifdef debug
+  if (leftSpeed < rightSpeed)
+    Serial.println("LEFT");
+  else if (leftSpeed > rightSpeed)
+    Serial.println("RIGHT");
+  else
+    Serial.println("FORWARD");
+#endif
 }
