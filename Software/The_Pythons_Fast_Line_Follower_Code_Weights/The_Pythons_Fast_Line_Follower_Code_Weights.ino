@@ -24,13 +24,13 @@ long lastError = 0;
 float control;
 
 /***** Motors pins *****/
-#define leftMotor 21
-#define rightMotor 23
-#define leftMotorIN 19
-#define rightMotorIN 22
+#define leftMotor 23
+#define rightMotor 21
+#define leftMotorIN 18
+#define rightMotorIN 16
 
-#define leftMotorIN2 18
-#define rightMotorIN2 16
+#define leftMotorIN2 22
+#define rightMotorIN2 19
 
 #define leftMotorChannel 0
 #define rightMotorChannel 1

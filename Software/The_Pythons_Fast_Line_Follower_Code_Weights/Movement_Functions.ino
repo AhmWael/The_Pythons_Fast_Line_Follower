@@ -24,6 +24,7 @@ void moveMotors(int control) {
     ledcWriteChannel(rightMotorChannel, 255);
     digitalWrite(rightMotorIN, LOW);
     digitalWrite(rightMotorIN2, LOW);
+    return;
   }
   leftSpeed = baseSpeed + control;
   rightSpeed = baseSpeed - control;
