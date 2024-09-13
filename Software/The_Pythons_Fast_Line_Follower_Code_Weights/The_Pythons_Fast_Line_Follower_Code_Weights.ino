@@ -25,11 +25,11 @@ float control;
 
 /***** Motors pins *****/
 #define leftMotor 23
-#define rightMotor 21
 #define leftMotorIN 18
-#define rightMotorIN 16
-
 #define leftMotorIN2 22
+
+#define rightMotor 21
+#define rightMotorIN 16
 #define rightMotorIN2 19
 
 #define leftMotorChannel 0
