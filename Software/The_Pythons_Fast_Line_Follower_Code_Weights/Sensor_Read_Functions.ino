@@ -21,14 +21,14 @@ long readSensors() {
   int flagR = 0;
   /** Read sensors & calculate Weighted sum **/
   for (int i = 0; i <= (numSensors / 2); i++) {
-    //sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
-    sensorValues[i] = analogRead(sensorPins[i]);
+    sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
+    //sensorValues[i] = analogRead(sensorPins[i]);
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
-    int half_threshold = (sensorOffsets[i][0] + sensorOffsets[i][1]) / 2;
+    //int half_threshold = (sensorOffsets[i][0] + sensorOffsets[i][1]) / 2;
 #ifdef debug
     Serial.printf("half threshold[%d]: %d : %d : -> %d\n", i, sensorOffsets[i][0], sensorOffsets[i][1], half_threshold);
 #endif
-    if (sensorValues[i] >= half_threshold) {
+    if (sensorValues[i] >= 700) {
       flagL = 1;
       weightedSum += sensorWeights[i];
       break;
@@ -36,14 +36,14 @@ long readSensors() {
   }
 
   for (int i = numSensors - 1; i >= numSensors / 2; i--) {
-    //sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
-    sensorValues[i] = analogRead(sensorPins[i]);
-    int half_threshold = (sensorOffsets[i][0] + sensorOffsets[i][1]) / 2;
+    sensorValues[i] = map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000);
+    //sensorValues[i] = analogRead(sensorPins[i]);
+    //int half_threshold = (sensorOffsets[i][0] + sensorOffsets[i][1]) / 2;
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
 #ifdef debug
     Serial.printf("half threshold[%d]: %d : %d : -> %d\n", i, sensorOffsets[i][0], sensorOffsets[i][1], half_threshold);
 #endif
-    if (sensorValues[i] >= half_threshold) {
+    if (sensorValues[i] >= 700) {
       flagR = 1;
       weightedSum += sensorWeights[i];
       break;
@@ -95,10 +95,10 @@ void calibrateIRS() {
 
     digitalWrite(leftMotorIN, LOW);
     digitalWrite(leftMotorIN2, HIGH);
-    ledcWriteChannel(leftMotorChannel, 170);
+    ledcWriteChannel(leftMotorChannel, 155);
     digitalWrite(rightMotorIN, HIGH);
     digitalWrite(rightMotorIN2, LOW);
-    ledcWriteChannel(rightMotorChannel, 170);
+    ledcWriteChannel(rightMotorChannel, 155);
 
     for (int i = 0; i < numSensors; i++) {
       sensorValues[i] = analogRead(sensorPins[i]);
