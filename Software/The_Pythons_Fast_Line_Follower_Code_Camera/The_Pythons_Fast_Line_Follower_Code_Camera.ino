@@ -213,6 +213,15 @@ if(Serial.available() && highSpeed!=0){
     deflection=Serial.parseInt();
     Serial.printf("%d\n",deflection);
     if(abs(deflection)>=slowdown_thresh ){
+      if(state){
+        ledcWriteChannel(leftMotorChannel, 255);
+    digitalWrite(leftMotorIN, LOW);
+    digitalWrite(leftMotorIN2, LOW);
+    ledcWriteChannel(rightMotorChannel, 255);
+    digitalWrite(rightMotorIN, LOW);
+    digitalWrite(rightMotorIN2, LOW);
+        delay(10);
+        }
       baseSpeed=originalBase-slowdown_speed;
       highSpeed=originalHigh-slowdown_speed;
       digitalWrite(debugLed, HIGH);
@@ -223,11 +232,13 @@ if(Serial.available() && highSpeed!=0){
         baseSpeed=originalBase+speedup_speed;
         highSpeed=originalHigh+speedup_speed;
         digitalWrite(debugLed, LOW);
+        state=true;
         }
       else{
         baseSpeed=originalBase;
         highSpeed=originalHigh;
         digitalWrite(debugLed, LOW);
+        state=true;
         }
     }
   // Output the position and control value for debugging
