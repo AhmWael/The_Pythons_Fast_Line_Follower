@@ -35,6 +35,7 @@ float control;
 #define leftMotorChannel 0
 #define rightMotorChannel 1
 
+int calibSpeed = 160;
 int baseSpeed = 225;
 int highSpeed = 0; //240
 int originalBase=baseSpeed;

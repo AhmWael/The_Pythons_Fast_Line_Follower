@@ -95,10 +95,10 @@ void calibrateIRS() {
 
     digitalWrite(leftMotorIN, LOW);
     digitalWrite(leftMotorIN2, HIGH);
-    ledcWriteChannel(leftMotorChannel, 155);
+    ledcWriteChannel(leftMotorChannel, calibSpeed);
     digitalWrite(rightMotorIN, HIGH);
     digitalWrite(rightMotorIN2, LOW);
-    ledcWriteChannel(rightMotorChannel, 155);
+    ledcWriteChannel(rightMotorChannel, calibSpeed);
 
     for (int i = 0; i < numSensors; i++) {
       sensorValues[i] = analogRead(sensorPins[i]);

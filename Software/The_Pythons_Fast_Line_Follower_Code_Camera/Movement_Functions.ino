@@ -32,12 +32,17 @@ void moveMotors(int control) {
   leftSpeed = constrain(leftSpeed, -highSpeed, highSpeed);
   rightSpeed = constrain(rightSpeed, -highSpeed, highSpeed);
 
-  if (leftSpeed <= 0 && abs(linePosition) >= IR1) {
+  if (leftSpeed <= 0 && abs(linePosition) == 1000) { //Backward
+//    int num = 0;
+//    String linePositionStr = String(linePosition);
+//    for (int i = 0; i < linePositionStr.length(); i++) {
+//      num = num * 10 + (linePositionStr[i] - '0');
+//    }
     digitalWrite(leftMotorIN, LOW);
     digitalWrite(leftMotorIN2, HIGH);
-    ledcWriteChannel(leftMotorChannel, abs(leftSpeed));
+    ledcWriteChannel(leftMotorChannel, abs(160));
   }
-  else if (leftSpeed <= 0) {
+  else if (linePosition == -2000 || leftSpeed <= 0 ) { //Stop
     ledcWriteChannel(leftMotorChannel, 255);
     digitalWrite(leftMotorIN, LOW);
     digitalWrite(leftMotorIN2, LOW);
@@ -48,12 +53,12 @@ void moveMotors(int control) {
     ledcWriteChannel(leftMotorChannel, abs(leftSpeed));
   }
 
-  if (rightSpeed <= 0 && abs(linePosition) >= IR1) {
+  if (rightSpeed <= 0 && abs(linePosition) == 1000) { //Backward
     digitalWrite(rightMotorIN, LOW);
     digitalWrite(rightMotorIN2, HIGH);
-    ledcWriteChannel(rightMotorChannel, abs(rightSpeed));
+    ledcWriteChannel(rightMotorChannel, abs(160));
   }
-  else if (rightSpeed <= 0) {
+  else if (linePosition == 2000 || rightSpeed <= 0 ) { //Stop
     ledcWriteChannel(rightMotorChannel, 255);
     digitalWrite(rightMotorIN, LOW);
     digitalWrite(rightMotorIN2, LOW);
