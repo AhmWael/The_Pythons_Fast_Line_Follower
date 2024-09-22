@@ -25,8 +25,8 @@ long readSensors() {
     //sensorValues[i] = analogRead(sensorPins[i]);
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
     //int half_threshold = (sensorOffsets[i][0] + sensorOffsets[i][1]) / 2;
-#ifdef debug
-    Serial.printf("half threshold[%d]: %d : %d : -> %d\n", i, sensorOffsets[i][0], sensorOffsets[i][1],sensorValues[i]);
+#if defined(debug) && defined(debugIR)
+    Serial.printf("half threshold[%d]: %d : %d : -> %d\n", i, sensorOffsets[i][0], sensorOffsets[i][1], sensorValues[i]);
 #endif
     if (sensorValues[i] >= 550) {
       flagL = 1;
@@ -40,8 +40,8 @@ long readSensors() {
     //sensorValues[i] = analogRead(sensorPins[i]);
     //int half_threshold = (sensorOffsets[i][0] + sensorOffsets[i][1]) / 2;
     //Serial.printf("Sensor[%d]: min:%d max:%d value:%d\n",i,sensorOffsets[i][0],sensorOffsets[i][1],sensorValues[i]);
-#ifdef debug
-    Serial.printf("half threshold[%d]: %d : %d : -> %d\n", i, sensorOffsets[i][0], sensorOffsets[i][1],sensorValues[i]);
+#if defined(debug) && defined(debugIR)
+    Serial.printf("half threshold[%d]: %d : %d : -> %d\n", i, sensorOffsets[i][0], sensorOffsets[i][1], sensorValues[i]);
 #endif
     if (sensorValues[i] >= 550) {
       flagR = 1;
@@ -57,7 +57,7 @@ long readSensors() {
     lastweightSum = weightedSum;
   }
 
-#ifdef debug
+#if defined(debug) && defined(debugIR)
   Serial.printf("weightedSum : %d\n", weightedSum);
   for (int i = 0; i < numSensors; i++) {
     Serial.print(i);
@@ -73,7 +73,9 @@ long readSensors() {
 }
 
 void calibrateIRS() {
+#if defined(debug) && defined(debugIRCalib)
   Serial.println("Starting Calibration!");
+#endif
   ledcWriteChannel(leftMotorChannel, 0);
   ledcWriteChannel(rightMotorChannel, 0);
   digitalWrite(debugLed, HIGH);
@@ -91,7 +93,9 @@ void calibrateIRS() {
   }
   timer = millis();
   while (millis() - timer < 10000) {
+#if defined(debug) && defined(debugIRCalib)
     Serial.println("Calibrating");
+#endif
 
     digitalWrite(leftMotorIN, LOW);
     digitalWrite(leftMotorIN2, HIGH);
@@ -106,13 +110,17 @@ void calibrateIRS() {
         sensorOffsets[i][0] = sensorValues[i];
       if (sensorValues[i] > sensorOffsets[i][1])
         sensorOffsets[i][1] = sensorValues[i];
+#if defined(debug) && defined(debugIRCalib)
       Serial.print(i);
       Serial.print(" :  ");
       Serial.print(sensorValues[i]);
       //Serial.print(map(analogRead(sensorPins[i]), sensorOffsets[i][0], sensorOffsets[i][1], 0, 1000));
       Serial.print("  ");
+#endif
     }
+#if defined(debug) && defined(debugIRCalib)
     Serial.println();
+#endif
   }
 
   ledcWriteChannel(leftMotorChannel, 255);
@@ -123,6 +131,7 @@ void calibrateIRS() {
   digitalWrite(rightMotorIN2, LOW);
 
   digitalWrite(debugLed, LOW);
+#if defined(debug) && defined(debugIRCalib)
   Serial.println("Calibration Ended!");
 
   Serial.println("Sensors Offsets: ");
@@ -133,6 +142,8 @@ void calibrateIRS() {
     Serial.print(" ,    ");
     Serial.println(sensorOffsets[i][1]);
   }
+  Serial.println("/////////////////////////////////////////////");
+#endif
   // Calculate max and min for all sensors
   /*
     int max_thresh=0,min_thresh=4095;
@@ -149,6 +160,6 @@ void calibrateIRS() {
     Serial.print(" ,    ");
     Serial.println(threshold);
   */
-  Serial.println("/////////////////////////////////////////////");
+  
 
 }

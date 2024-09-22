@@ -43,7 +43,7 @@ void moveMotors(int control) {
     lastPosStr = linePositionStr;
     digitalWrite(leftMotorIN, LOW);
     digitalWrite(leftMotorIN2, HIGH);
-    #ifdef debug
+    #if defined(debug) && defined(debugMotor)
     Serial.print("BackSpeed: ");
     Serial.println(abs(int(BackSpeed)));
     #endif
@@ -71,7 +71,7 @@ void moveMotors(int control) {
     lastPosStr = linePositionStr;
     digitalWrite(rightMotorIN, LOW);
     digitalWrite(rightMotorIN2, HIGH);
-    #ifdef debug
+    #if defined(debug) && defined(debugMotor)
     Serial.print("BackSpeed: ");
     Serial.println(abs(int(BackSpeed)));
     #endif
@@ -111,7 +111,7 @@ void moveMotors(int control) {
     }
   */
 
-#ifdef debug
+#if defined(debug) && defined(debugMotor)
   if (leftSpeed < rightSpeed)
     Serial.println("LEFT");
   else if (leftSpeed > rightSpeed)

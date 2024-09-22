@@ -1,4 +1,5 @@
 unsigned long long int timer;
+/***** Line Sensors *****/
 int threshold = 1500;
 const int numSensors = 13; // Number of sensors
 int sensorPins[numSensors] = { 13, 14, 27, 26, 25, 33, 32, 35, 34, 39, 36, 15, 4}; // Sensor pins 13 / 4
@@ -12,6 +13,7 @@ int IR4 = 399;
 int IR5 = 15;
 int IR6 = 5;
 int sensorWeights[numSensors] = { -IR1, -IR2, -IR3, -IR4, -IR5, -IR6, 0, IR6, IR5, IR4, IR3, IR2, IR1};
+
 /***** PID constants *****/
 float Kp = 1; // Proportional gain
 float Ki = 0.0; // Integral gain
@@ -35,15 +37,18 @@ float control;
 #define leftMotorChannel 0
 #define rightMotorChannel 1
 
+/***** Motor Speeds *****/
 int calibSpeed = 160;
 int baseSpeed = 225;
 int highSpeed = 0; //240
 int originalBase = baseSpeed;
 int originalHigh = highSpeed;
+
 #define button 5
 #define button2 17
 #define debugLed 9
-//// Camera Variables
+
+/***** Camera Variables *****/
 int slowdown_thresh = 28;
 int slowdown_speed = 25;
 int speedup_thresh = 10;
@@ -52,14 +57,22 @@ int speedup_speed = 35;
 bool state = true;
 
 // Uncomment to enable prints
-//#define debug
+//#define debug         //Uncomment this line for lines below to work
+//#define debugIR
+//#define debugIRCalib
+//#define debugBT
+//#define debugMotor
+//#define debugPID
+//#define debugCAM
+
+#define BT
 
 
 int BackSpeed = 0;
 String lastPosStr = "";
 
 int deflection = 0;
-
+#ifdef BT
 #include "BluetoothSerial.h"
 
 String device_name = "ESP32-BT-Slave";
@@ -75,9 +88,13 @@ String device_name = "ESP32-BT-Slave";
 #endif
 
 BluetoothSerial SerialBT;
+#endif
+
 void setup() {
   Serial.begin(115200);
+  #ifdef BT
   SerialBT.begin(device_name);  //Bluetooth device name
+  #endif
   pinMode(leftMotorIN, OUTPUT);
   pinMode(rightMotorIN, OUTPUT);
   pinMode(leftMotorIN2, OUTPUT);
@@ -135,7 +152,7 @@ void loop() {
 //  digitalWrite(rightMotorIN, HIGH);
 //  digitalWrite(rightMotorIN2, LOW);
 //  ledcWriteChannel(rightMotorChannel, abs(160));
-
+#ifdef BT
   if (SerialBT.available()) {
     //auto received=;
     String rec = (String)SerialBT.readStringUntil('\n');
@@ -222,10 +239,13 @@ void loop() {
     //delay(500);
     //if(rec[0]=='S')
   }
+#endif
   //Serial.printf("SDT: %d SDS: %d SUT: %d SUS %d\n",slowdown_thresh,slowdown_speed,speedup_thresh,speedup_speed);
   if (Serial.available() && highSpeed != 0) {
     deflection = Serial.parseInt();
+    #if defined(debug) && defined(debugCAM)
     Serial.printf("%d\n", deflection);
+    #endif
     if (abs(deflection) >= slowdown_thresh ) {
       if (state) {
         ledcWriteChannel(leftMotorChannel, 255);
@@ -241,7 +261,6 @@ void loop() {
       digitalWrite(debugLed, HIGH);
       state = false;
     }
-
     else if (abs(deflection) < speedup_thresh  ) {
       baseSpeed = originalBase + speedup_speed;
       highSpeed = originalHigh + speedup_speed;
