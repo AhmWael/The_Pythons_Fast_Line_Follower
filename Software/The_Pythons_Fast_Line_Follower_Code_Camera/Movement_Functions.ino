@@ -27,20 +27,27 @@ void moveMotors(int control) {
     return;
   }
   leftSpeed = baseSpeed + control;
-  rightSpeed = baseSpeed - control;
+  rightSpeed = baseSpeed - control;//+ 5
 
   leftSpeed = constrain(leftSpeed, -highSpeed, highSpeed);
   rightSpeed = constrain(rightSpeed, -highSpeed, highSpeed);
 
-  if (leftSpeed <= 0 && abs(linePosition) == 1000) { //Backward
-//    int num = 0;
-//    String linePositionStr = String(linePosition);
-//    for (int i = 0; i < linePositionStr.length(); i++) {
-//      num = num * 10 + (linePositionStr[i] - '0');
-//    }
+  if (leftSpeed <= 0 && abs(linePosition) >= 1000) { //Backward
+    String linePositionStr = String(abs(linePosition));
+    if(lastPosStr != linePositionStr){
+      BackSpeed = 0;
+      for (int i = 1; i < linePositionStr.length(); i++) {
+        BackSpeed = BackSpeed * 10 + (linePositionStr[i] - '0');
+      }
+    }
+    lastPosStr = linePositionStr;
     digitalWrite(leftMotorIN, LOW);
     digitalWrite(leftMotorIN2, HIGH);
-    ledcWriteChannel(leftMotorChannel, abs(160));
+    #ifdef debug
+    Serial.print("BackSpeed: ");
+    Serial.println(abs(int(BackSpeed)));
+    #endif
+    ledcWriteChannel(leftMotorChannel, abs(int(BackSpeed)));
   }
   else if (linePosition == -2000 || leftSpeed <= 0 ) { //Stop
     ledcWriteChannel(leftMotorChannel, 255);
@@ -53,10 +60,22 @@ void moveMotors(int control) {
     ledcWriteChannel(leftMotorChannel, abs(leftSpeed));
   }
 
-  if (rightSpeed <= 0 && abs(linePosition) == 1000) { //Backward
+  if (rightSpeed <= 0 && abs(linePosition) >= 1000) { //Backward
+    String linePositionStr = String(abs(linePosition));
+    if(lastPosStr != linePositionStr){
+      BackSpeed = 0;
+      for (int i = 1; i < linePositionStr.length(); i++) {
+        BackSpeed = BackSpeed * 10 + (linePositionStr[i] - '0');
+      } 
+    }
+    lastPosStr = linePositionStr;
     digitalWrite(rightMotorIN, LOW);
     digitalWrite(rightMotorIN2, HIGH);
-    ledcWriteChannel(rightMotorChannel, abs(160));
+    #ifdef debug
+    Serial.print("BackSpeed: ");
+    Serial.println(abs(int(BackSpeed)));
+    #endif
+    ledcWriteChannel(rightMotorChannel, abs(int(BackSpeed)));
   }
   else if (linePosition == 2000 || rightSpeed <= 0 ) { //Stop
     ledcWriteChannel(rightMotorChannel, 255);

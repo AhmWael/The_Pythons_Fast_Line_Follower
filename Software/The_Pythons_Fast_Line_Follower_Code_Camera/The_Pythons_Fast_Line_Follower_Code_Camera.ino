@@ -38,22 +38,28 @@ float control;
 int calibSpeed = 160;
 int baseSpeed = 225;
 int highSpeed = 0; //240
-int originalBase=baseSpeed;
-int originalHigh=highSpeed;
+int originalBase = baseSpeed;
+int originalHigh = highSpeed;
 #define button 5
 #define button2 17
 #define debugLed 9
 //// Camera Variables
-int slowdown_thresh=28;
-int slowdown_speed=25;
-int speedup_thresh=10;
-int speedup_speed=35;
+int slowdown_thresh = 28;
+int slowdown_speed = 25;
+int speedup_thresh = 10;
+int speedup_speed = 35;
 
-bool state=true;
+bool state = true;
 
 // Uncomment to enable prints
 //#define debug
-int deflection=0;
+
+
+int BackSpeed = 0;
+String lastPosStr = "";
+
+int deflection = 0;
+
 #include "BluetoothSerial.h"
 
 String device_name = "ESP32-BT-Slave";
@@ -105,7 +111,7 @@ void setup() {
 void loop() {
   //  ledcWriteChannel(leftMotorChannel, 110);
   //  ledcWriteChannel(rightMotorChannel, 110);
-  
+
   // Calculate the position of the line
   linePosition = readSensors();
 
@@ -115,14 +121,21 @@ void loop() {
   if (!digitalRead(button))
     calibrateIRS();
 
-  
-  
+
+
   // Call the PID function to calculate the control signal
   control = calculatePID(linePosition);
 
   // Use the control value to adjust motor speed
   moveMotors(control);
-  
+
+//  digitalWrite(leftMotorIN, HIGH);
+//  digitalWrite(leftMotorIN2, LOW);
+//  ledcWriteChannel(leftMotorChannel, abs(160));
+//  digitalWrite(rightMotorIN, HIGH);
+//  digitalWrite(rightMotorIN2, LOW);
+//  ledcWriteChannel(rightMotorChannel, abs(160));
+
   if (SerialBT.available()) {
     //auto received=;
     String rec = (String)SerialBT.readStringUntil('\n');
@@ -163,12 +176,12 @@ void loop() {
     }
     else if (fun == 'M') {
       highSpeed = (int)num;
-      originalHigh=highSpeed;
+      originalHigh = highSpeed;
       //Serial.printf("high: %d\n",highSpeed);
     }
     else if (fun == 'B') {
       baseSpeed = (int)num;
-      originalBase=baseSpeed;
+      originalBase = baseSpeed;
       //Serial.printf("base: %d\n",baseSpeed);
     }
     else if (fun == 'Q') {
@@ -192,16 +205,16 @@ void loop() {
     else if (fun == 'H') {
       slowdown_thresh = (int)num;
     }
-     else if (fun == 'J') {
+    else if (fun == 'J') {
       slowdown_speed = (int)num;
     }
-     else if (fun == 'K') {
+    else if (fun == 'K') {
       speedup_thresh = (int)num;
     }
-     else if (fun == 'L') {
+    else if (fun == 'L') {
       speedup_speed = (int)num;
     }
-    
+
     //val+=rec[rec.length()-1]/1000.0;
     //Serial.print("Float: ");
     //Serial.printf("num: %f\n",num);
@@ -210,38 +223,38 @@ void loop() {
     //if(rec[0]=='S')
   }
   //Serial.printf("SDT: %d SDS: %d SUT: %d SUS %d\n",slowdown_thresh,slowdown_speed,speedup_thresh,speedup_speed);
-if(Serial.available() && highSpeed!=0){
-    deflection=Serial.parseInt();
-    Serial.printf("%d\n",deflection);
-    if(abs(deflection)>=slowdown_thresh ){
-      if(state){
+  if (Serial.available() && highSpeed != 0) {
+    deflection = Serial.parseInt();
+    Serial.printf("%d\n", deflection);
+    if (abs(deflection) >= slowdown_thresh ) {
+      if (state) {
         ledcWriteChannel(leftMotorChannel, 255);
-    digitalWrite(leftMotorIN, LOW);
-    digitalWrite(leftMotorIN2, LOW);
-    ledcWriteChannel(rightMotorChannel, 255);
-    digitalWrite(rightMotorIN, LOW);
-    digitalWrite(rightMotorIN2, LOW);
+        digitalWrite(leftMotorIN, LOW);
+        digitalWrite(leftMotorIN2, LOW);
+        ledcWriteChannel(rightMotorChannel, 255);
+        digitalWrite(rightMotorIN, LOW);
+        digitalWrite(rightMotorIN2, LOW);
         delay(10);
-        }
-      baseSpeed=originalBase-slowdown_speed;
-      highSpeed=originalHigh-slowdown_speed;
-      digitalWrite(debugLed, HIGH);
-      state=false;
       }
-      
-      else if(abs(deflection)<speedup_thresh  ){
-        baseSpeed=originalBase+speedup_speed;
-        highSpeed=originalHigh+speedup_speed;
-        digitalWrite(debugLed, LOW);
-        state=true;
-        }
-      else{
-        baseSpeed=originalBase;
-        highSpeed=originalHigh;
-        digitalWrite(debugLed, LOW);
-        state=true;
-        }
+      baseSpeed = originalBase - slowdown_speed;
+      highSpeed = originalHigh - slowdown_speed;
+      digitalWrite(debugLed, HIGH);
+      state = false;
     }
+
+    else if (abs(deflection) < speedup_thresh  ) {
+      baseSpeed = originalBase + speedup_speed;
+      highSpeed = originalHigh + speedup_speed;
+      digitalWrite(debugLed, LOW);
+      state = true;
+    }
+    else {
+      baseSpeed = originalBase;
+      highSpeed = originalHigh;
+      digitalWrite(debugLed, LOW);
+      state = true;
+    }
+  }
   // Output the position and control value for debugging
 #ifdef debug
   Serial.print("Position: ");
