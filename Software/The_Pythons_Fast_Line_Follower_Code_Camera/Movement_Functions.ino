@@ -31,8 +31,11 @@ void moveMotors(int control) {
 
   leftSpeed = constrain(leftSpeed, -highSpeed, highSpeed);
   rightSpeed = constrain(rightSpeed, -highSpeed, highSpeed);
-
-  if (leftSpeed <= 0 && abs(linePosition) >= 1000) { //Backward
+  if( linePosition == 0){
+  leftSpeed=highSpeed;
+  rightSpeed=highSpeed;
+  }
+  if (leftSpeed <= 0 && abs(linePosition) >= 1000 && abs(linePosition) <= 1255) { //Backward
     String linePositionStr = String(abs(linePosition));
     if(lastPosStr != linePositionStr){
       BackSpeed = 0;
@@ -60,7 +63,7 @@ void moveMotors(int control) {
     ledcWriteChannel(leftMotorChannel, abs(leftSpeed));
   }
 
-  if (rightSpeed <= 0 && abs(linePosition) >= 1000) { //Backward
+  if (rightSpeed <= 0 && abs(linePosition) >= 1000 && abs(linePosition) <= 1255) { //Backward
     String linePositionStr = String(abs(linePosition));
     if(lastPosStr != linePositionStr){
       BackSpeed = 0;
