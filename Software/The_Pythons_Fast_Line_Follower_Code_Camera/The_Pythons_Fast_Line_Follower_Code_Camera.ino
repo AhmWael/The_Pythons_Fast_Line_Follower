@@ -6,18 +6,18 @@ int sensorPins[numSensors] = { 13, 14, 27, 26, 25, 33, 32, 35, 34, 39, 36, 15, 4
 int sensorValues[numSensors]; // Array to store sensor readings
 long linePosition = 0; // Calculated position
 int sensorOffsets[numSensors][2];
-int IR1 = 400;
-int IR2 = 400;
-int IR3 = 399;
-int IR4 = 399;
-int IR5 = 15;
+int IR1 = 1150;
+int IR2 = 40;
+int IR3 = 30;
+int IR4 = 20;
+int IR5 = 10;
 int IR6 = 5;
 int sensorWeights[numSensors] = { -IR1, -IR2, -IR3, -IR4, -IR5, -IR6, 0, IR6, IR5, IR4, IR3, IR2, IR1};
 
 /***** PID constants *****/
-float Kp = 1; // Proportional gain
+float Kp = 15; // Proportional gain
 float Ki = 0.0; // Integral gain
-float Kd = 0; // Derivative gain
+float Kd = 250; // Derivative gain
 
 /***** PID variables *****/
 long lastPosition = 0;
@@ -52,18 +52,18 @@ int originalHigh = highSpeed;
 int slowdown_thresh = 28;
 int slowdown_speed = 25;
 int speedup_thresh = 10;
-int speedup_speed = 35;
+int speedup_speed = 5; //35
 
 bool state = true;
 
 // Uncomment to enable prints
-//#define debug         //Uncomment this line for lines below to work
+#define debug         //Uncomment this line for lines below to work
 //#define debugIR
 //#define debugIRCalib
 //#define debugBT
 //#define debugMotor
 //#define debugPID
-//#define debugCAM
+#define debugCAM
 
 #define BT
 
@@ -107,6 +107,7 @@ void setup() {
   digitalWrite(debugLed, LOW);
 
   pinMode(button, INPUT_PULLUP);
+  pinMode(button2, INPUT_PULLUP);
 
   // Initialize sensor pins as input
   for (int i = 0; i < numSensors; i++) {
@@ -137,15 +138,16 @@ void loop() {
 
   if (!digitalRead(button))
     calibrateIRS();
+    
+  if (!digitalRead(button2)){
+    //delay(1500);
+    highSpeed=225;
+    }
 
 
 
   // Call the PID function to calculate the control signal
-  control = calculatePID(linePosition);
-
-  // Use the control value to adjust motor speed
-  moveMotors(control);
-
+ 
 //  digitalWrite(leftMotorIN, HIGH);
 //  digitalWrite(leftMotorIN2, LOW);
 //  ledcWriteChannel(leftMotorChannel, abs(160));
@@ -242,6 +244,14 @@ void loop() {
 #endif
   //Serial.printf("SDT: %d SDS: %d SUT: %d SUS %d\n",slowdown_thresh,slowdown_speed,speedup_thresh,speedup_speed);
   if (Serial.available() && highSpeed != 0) {
+    /*
+    String cam_rec = (String)Serial.readStringUntil('\n');
+    if(cam_rec[0]=='N'){
+     deflection=slowdown_thresh-1;
+      digitalWrite(debugLed, HIGH);
+      }
+    else
+    */
     deflection = Serial.parseInt();
     #if defined(debug) && defined(debugCAM)
     Serial.printf("%d\n", deflection);
@@ -258,22 +268,37 @@ void loop() {
       }
       baseSpeed = originalBase - slowdown_speed;
       highSpeed = originalHigh - slowdown_speed;
-      digitalWrite(debugLed, HIGH);
+      digitalWrite(debugLed, LOW);
       state = false;
     }
     else if (abs(deflection) < speedup_thresh  ) {
-      baseSpeed = originalBase + speedup_speed;
-      highSpeed = originalHigh + speedup_speed;
-      digitalWrite(debugLed, LOW);
+      if(abs(linePosition)<40){
+        linePosition=deflection;
+        baseSpeed = originalBase + speedup_speed;
+        highSpeed = originalHigh + speedup_speed;
+        digitalWrite(debugLed, LOW);
+        }
+      else{
+      baseSpeed = originalBase;
+      highSpeed = originalHigh;
+      digitalWrite(debugLed, HIGH);
+        }
+      
+      
       state = true;
     }
     else {
       baseSpeed = originalBase;
       highSpeed = originalHigh;
-      digitalWrite(debugLed, LOW);
+      digitalWrite(debugLed, HIGH);
       state = true;
     }
   }
+   control = calculatePID(linePosition);
+
+  // Use the control value to adjust motor speed
+  moveMotors(control);
+
   // Output the position and control value for debugging
 #ifdef debug
   Serial.print("Position: ");
