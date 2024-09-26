@@ -244,6 +244,7 @@ void loop() {
 #endif
   //Serial.printf("SDT: %d SDS: %d SUT: %d SUS %d\n",slowdown_thresh,slowdown_speed,speedup_thresh,speedup_speed);
   if (Serial.available() && highSpeed != 0) {
+    
     /*
     String cam_rec = (String)Serial.readStringUntil('\n');
     if(cam_rec[0]=='N'){
@@ -256,7 +257,7 @@ void loop() {
     #if defined(debug) && defined(debugCAM)
     Serial.printf("%d\n", deflection);
     #endif
-    if (abs(deflection) >= slowdown_thresh ) {
+    if ( abs(deflection)<1000 && abs(deflection) >= slowdown_thresh ) {
       if (state) {
         ledcWriteChannel(leftMotorChannel, 255);
         digitalWrite(leftMotorIN, LOW);
@@ -268,7 +269,7 @@ void loop() {
       }
       baseSpeed = originalBase - slowdown_speed;
       highSpeed = originalHigh - slowdown_speed;
-      digitalWrite(debugLed, LOW);
+      digitalWrite(debugLed, HIGH);
       state = false;
     }
     else if (abs(deflection) < speedup_thresh  ) {
@@ -281,7 +282,7 @@ void loop() {
       else{
       baseSpeed = originalBase;
       highSpeed = originalHigh;
-      digitalWrite(debugLed, HIGH);
+      digitalWrite(debugLed, LOW);
         }
       
       
@@ -290,7 +291,7 @@ void loop() {
     else {
       baseSpeed = originalBase;
       highSpeed = originalHigh;
-      digitalWrite(debugLed, HIGH);
+      digitalWrite(debugLed, LOW);
       state = true;
     }
   }

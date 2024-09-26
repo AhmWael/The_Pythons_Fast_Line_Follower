@@ -24,7 +24,7 @@ blue_led.on()
 uart = UART(3, 115200)
 
 # Tracks a black line. Use [(128, 255)] for a tracking a white line.
-GRAYSCALE_THRESHOLD = [(0, 90)]
+GRAYSCALE_THRESHOLD = [(0, 60)]
 mainROI = (0,20,160,82)
 # Each roi is (x, y, w, h). The line detection algorithm will try to find the
 # centroid of the largest blob in each roi. The x position of the centroids
@@ -56,11 +56,13 @@ while(True):
     clock.tick() # Track elapsed milliseconds between snapshots().
     img = sensor.snapshot() # Take a picture and return the image.
     img.gamma_corr(gamma=1.3,contrast=2.3,brightness=-0.5)
+    #img.lens_corr(2.2)
     img.crop(roi= mainROI)
     centroid_sum = 0
     num_found=0
     last_exist=False
     first_exist=False
+    middle_exist=False
     last_cx=0
     middle_cx=0
     for r in ROIS:
@@ -72,7 +74,7 @@ while(True):
             #print(largest_blob.pixels())
             # Draw a rect around the blob.
             if r[4]==0.1 :
-                if largest_blob.w()<100 and largest_blob.h()>10:
+                if largest_blob.w()<100 and largest_blob.h()>2:
                     first_cx=largest_blob.cx()
                     print(largest_blob.pixels())
                     first_exist=True
@@ -82,6 +84,7 @@ while(True):
                     continue
             if r[4]==0.3:
                 middle_cx=largest_blob.cx()
+                middle_exist=True
             if r[4]==0.7:
                 last_cx=largest_blob.cx()
                 last_exist=True
@@ -137,10 +140,16 @@ while(True):
     else:
     '''
 
+    '''
+    elif first_exist and middle_exist :
+        uart.write(str(middle_cx-first_cx)+'\n')
+    elif last_exist and middle_exist:
+        uart.write(str(last_cx-middle_cx)+'\n')
+    '''
     if last_exist and first_exist:
         uart.write(str((last_cx-first_cx))+'\n')
-    else :
-        uart.write(str(middle_cx-(80))+'\n')
+    else:
+        uart.write(str("1000")+'\n')
     #uart.write(str(int(-deflection_angle))+'\n')
     #time.sleep_ms(100)
     #print(clock.fps()) # Note: Your OpenMV Cam runs about half as fast while
