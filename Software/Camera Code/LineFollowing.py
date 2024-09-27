@@ -25,15 +25,15 @@ uart = UART(3, 115200)
 
 # Tracks a black line. Use [(128, 255)] for a tracking a white line.
 GRAYSCALE_THRESHOLD = [(0, 60)]
-mainROI = (0,20,160,82)
+mainROI = (0,0,160,90)
 # Each roi is (x, y, w, h). The line detection algorithm will try to find the
 # centroid of the largest blob in each roi. The x position of the centroids
 # will then be averaged with different weights where the most weight is assigned
 # to the roi near the bottom of the image and less to the next roi and so on.
 ROIS = [ # [ROI, weight]
-        (20, 60, 120, 20, 0.7), # You'll need to tweak the weights for your app
-        (20,  45, 120, 10, 0.3), # depending on how your robot is setup.
-        (20,   15, 120, 25, 0.1)
+        (20, 75, 120, 15, 0.7), # You'll need to tweak the weights for your app
+        (20,  60, 120, 10, 0.3), # depending on how your robot is setup.
+        (20,   30, 120, 25, 0.1)
        ]
 
 # Compute the weight divisor (we're computing this so you don't have to make weights add to 1).
@@ -74,9 +74,9 @@ while(True):
             #print(largest_blob.pixels())
             # Draw a rect around the blob.
             if r[4]==0.1 :
-                if largest_blob.w()<100 and largest_blob.h()>2:
+                print(largest_blob.w())
+                if largest_blob.w()<=160 :
                     first_cx=largest_blob.cx()
-                    print(largest_blob.pixels())
                     first_exist=True
                 else:
                     first_exist=False
@@ -88,6 +88,9 @@ while(True):
             if r[4]==0.7:
                 last_cx=largest_blob.cx()
                 last_exist=True
+#            if not last_exist and not middle_exist:
+#                first_exist=False
+
             img.draw_rectangle(largest_blob.rect(),color=120)
             img.draw_cross(largest_blob.cx(),
                            largest_blob.cy())
@@ -113,15 +116,15 @@ while(True):
     # Convert angle in radians to degrees.
     deflection_angle = math.degrees(deflection_angle)
 
-    img.draw_rectangle(20, 60, 120, 20, color = 0, thickness = 2, fill = False)
-    img.draw_rectangle(20,  45, 120, 10, color = 0, thickness = 2, fill = False)
-    img.draw_rectangle(20,   15, 120, 25, color = 0, thickness = 2, fill = False)
+    img.draw_rectangle(20, 75, 120, 15, color = 0, thickness = 2, fill = False)
+    img.draw_rectangle(20,  60, 120, 10, color = 0, thickness = 2, fill = False)
+    img.draw_rectangle(20,   30, 120, 25, color = 0, thickness = 2, fill = False)
     # Now you have an angle telling you how much to turn the robot by which
     # incorporates the part of the line nearest to the robot and parts of
     # the line farther away from the robot for a better prediction.
     #print("Turn Angle: %d" % int(deflection_angle))
     if last_exist and first_exist:
-        print("Diff 1: " +str(last_cx-first_cx) )
+        print("Diff 1: " +str(first_cx-80) )
     else:
         print("No region")
     '''
@@ -147,7 +150,7 @@ while(True):
         uart.write(str(last_cx-middle_cx)+'\n')
     '''
     if last_exist and first_exist:
-        uart.write(str((last_cx-first_cx))+'\n')
+        uart.write(str((first_cx-80))+'\n')
     else:
         uart.write(str("1000")+'\n')
     #uart.write(str(int(-deflection_angle))+'\n')

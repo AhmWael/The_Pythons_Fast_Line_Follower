@@ -6,18 +6,18 @@ int sensorPins[numSensors] = { 13, 14, 27, 26, 25, 33, 32, 35, 34, 39, 36, 15, 4
 int sensorValues[numSensors]; // Array to store sensor readings
 long linePosition = 0; // Calculated position
 int sensorOffsets[numSensors][2];
-int IR1 = 1150;
+int IR1 = 1160;
 int IR2 = 40;
 int IR3 = 30;
 int IR4 = 20;
 int IR5 = 10;
-int IR6 = 5;
+int IR6 = 3;
 int sensorWeights[numSensors] = { -IR1, -IR2, -IR3, -IR4, -IR5, -IR6, 0, IR6, IR5, IR4, IR3, IR2, IR1};
 
 /***** PID constants *****/
-float Kp = 15; // Proportional gain
+float Kp = 10; // Proportional gain
 float Ki = 0.0; // Integral gain
-float Kd = 250; // Derivative gain
+float Kd = 100; // Derivative gain
 
 /***** PID variables *****/
 long lastPosition = 0;
@@ -49,21 +49,21 @@ int originalHigh = highSpeed;
 #define debugLed 9
 
 /***** Camera Variables *****/
-int slowdown_thresh = 28;
-int slowdown_speed = 25;
+int slowdown_thresh = 40;
+int slowdown_speed = 5;
 int speedup_thresh = 10;
-int speedup_speed = 5; //35
+int speedup_speed = 20; //35
 
 bool state = true;
 
 // Uncomment to enable prints
-#define debug         //Uncomment this line for lines below to work
+//#define debug         //Uncomment this line for lines below to work
 //#define debugIR
 //#define debugIRCalib
 //#define debugBT
 //#define debugMotor
 //#define debugPID
-#define debugCAM
+//#define debugCAM
 
 #define BT
 
@@ -92,9 +92,9 @@ BluetoothSerial SerialBT;
 
 void setup() {
   Serial.begin(115200);
-  #ifdef BT
+#ifdef BT
   SerialBT.begin(device_name);  //Bluetooth device name
-  #endif
+#endif
   pinMode(leftMotorIN, OUTPUT);
   pinMode(rightMotorIN, OUTPUT);
   pinMode(leftMotorIN2, OUTPUT);
@@ -138,22 +138,22 @@ void loop() {
 
   if (!digitalRead(button))
     calibrateIRS();
-    
-  if (!digitalRead(button2)){
+
+  if (!digitalRead(button2)) {
     //delay(1500);
-    highSpeed=225;
-    }
+    highSpeed = 225;
+  }
 
 
 
   // Call the PID function to calculate the control signal
- 
-//  digitalWrite(leftMotorIN, HIGH);
-//  digitalWrite(leftMotorIN2, LOW);
-//  ledcWriteChannel(leftMotorChannel, abs(160));
-//  digitalWrite(rightMotorIN, HIGH);
-//  digitalWrite(rightMotorIN2, LOW);
-//  ledcWriteChannel(rightMotorChannel, abs(160));
+
+  //  digitalWrite(leftMotorIN, HIGH);
+  //  digitalWrite(leftMotorIN2, LOW);
+  //  ledcWriteChannel(leftMotorChannel, abs(160));
+  //  digitalWrite(rightMotorIN, HIGH);
+  //  digitalWrite(rightMotorIN2, LOW);
+  //  ledcWriteChannel(rightMotorChannel, abs(160));
 #ifdef BT
   if (SerialBT.available()) {
     //auto received=;
@@ -244,28 +244,29 @@ void loop() {
 #endif
   //Serial.printf("SDT: %d SDS: %d SUT: %d SUS %d\n",slowdown_thresh,slowdown_speed,speedup_thresh,speedup_speed);
   if (Serial.available() && highSpeed != 0) {
-    
+
     /*
-    String cam_rec = (String)Serial.readStringUntil('\n');
-    if(cam_rec[0]=='N'){
-     deflection=slowdown_thresh-1;
+      String cam_rec = (String)Serial.readStringUntil('\n');
+      if(cam_rec[0]=='N'){
+      deflection=slowdown_thresh-1;
       digitalWrite(debugLed, HIGH);
       }
-    else
+      else
     */
     deflection = Serial.parseInt();
-    #if defined(debug) && defined(debugCAM)
+#if defined(debug) && defined(debugCAM)
     Serial.printf("%d\n", deflection);
-    #endif
-    if ( abs(deflection)<1000 && abs(deflection) >= slowdown_thresh ) {
+#endif
+    if ( abs(deflection) < 1000 && abs(deflection) >= slowdown_thresh ) {
       if (state) {
-        ledcWriteChannel(leftMotorChannel, 255);
+      
+        ledcWriteChannel(leftMotorChannel, 135);
         digitalWrite(leftMotorIN, LOW);
-        digitalWrite(leftMotorIN2, LOW);
-        ledcWriteChannel(rightMotorChannel, 255);
+        digitalWrite(leftMotorIN2, HIGH);
+        ledcWriteChannel(rightMotorChannel, 135);
         digitalWrite(rightMotorIN, LOW);
-        digitalWrite(rightMotorIN2, LOW);
-        delay(10);
+        digitalWrite(rightMotorIN2, HIGH);
+        delay(25);
       }
       baseSpeed = originalBase - slowdown_speed;
       highSpeed = originalHigh - slowdown_speed;
@@ -273,19 +274,19 @@ void loop() {
       state = false;
     }
     else if (abs(deflection) < speedup_thresh  ) {
-      if(abs(linePosition)<40){
-        linePosition=deflection;
+      if (abs(linePosition) < 40) {
+        linePosition = deflection;
         baseSpeed = originalBase + speedup_speed;
         highSpeed = originalHigh + speedup_speed;
         digitalWrite(debugLed, LOW);
-        }
-      else{
-      baseSpeed = originalBase;
-      highSpeed = originalHigh;
-      digitalWrite(debugLed, LOW);
-        }
-      
-      
+      }
+      else {
+        baseSpeed = originalBase;
+        highSpeed = originalHigh;
+        digitalWrite(debugLed, LOW);
+      }
+
+
       state = true;
     }
     else {
@@ -295,7 +296,7 @@ void loop() {
       state = true;
     }
   }
-   control = calculatePID(linePosition);
+  control = calculatePID(linePosition);
 
   // Use the control value to adjust motor speed
   moveMotors(control);
