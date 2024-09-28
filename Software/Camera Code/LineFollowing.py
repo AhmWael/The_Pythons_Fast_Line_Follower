@@ -24,7 +24,7 @@ blue_led.on()
 uart = UART(3, 115200)
 
 # Tracks a black line. Use [(128, 255)] for a tracking a white line.
-GRAYSCALE_THRESHOLD = [(0, 60)]
+GRAYSCALE_THRESHOLD = [(0, 24)]
 mainROI = (0,0,160,92)
 # Each roi is (x, y, w, h). The line detection algorithm will try to find the
 # centroid of the largest blob in each roi. The x position of the centroids
@@ -55,7 +55,7 @@ first_cx=0
 while(True):
     clock.tick() # Track elapsed milliseconds between snapshots().
     img = sensor.snapshot() # Take a picture and return the image.
-    img.gamma_corr(gamma=1.3,contrast=2.3,brightness=-0.5)
+    img.gamma_corr(gamma=1.6,contrast=2.7,brightness=-1.4)
     #img.lens_corr(2.2)
     img.crop(roi= mainROI)
     centroid_sum = 0
