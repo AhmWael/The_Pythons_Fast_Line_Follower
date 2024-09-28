@@ -17,7 +17,7 @@ int sensorWeights[numSensors] = { -IR1, -IR2, -IR3, -IR4, -IR5, -IR6, 0, IR6, IR
 /***** PID constants *****/
 float Kp = 10; // Proportional gain
 float Ki = 0.0; // Integral gain
-float Kd = 100; // Derivative gain
+float Kd = 250; // Derivative gain
 
 /***** PID variables *****/
 long lastPosition = 0;
@@ -27,19 +27,19 @@ float control;
 
 /***** Motors pins *****/
 #define leftMotor 23
-#define leftMotorIN 18
-#define leftMotorIN2 22
+#define leftMotorIN 22
+#define leftMotorIN2 18
 
 #define rightMotor 21
-#define rightMotorIN 16
-#define rightMotorIN2 19
+#define rightMotorIN 19
+#define rightMotorIN2 16
 
 #define leftMotorChannel 0
 #define rightMotorChannel 1
 
 /***** Motor Speeds *****/
 int calibSpeed = 160;
-int baseSpeed = 225;
+int baseSpeed = 220;
 int highSpeed = 0; //240
 int originalBase = baseSpeed;
 int originalHigh = highSpeed;
@@ -50,16 +50,16 @@ int originalHigh = highSpeed;
 
 /***** Camera Variables *****/
 int slowdown_thresh = 40;
-int slowdown_speed = 5;
-int speedup_thresh = 10;
-int speedup_speed = 20; //35
+int slowdown_speed = 10;
+int speedup_thresh = 20;
+int speedup_speed = 10; //35
 
 bool state = true;
 
 // Uncomment to enable prints
 //#define debug         //Uncomment this line for lines below to work
-//#define debugIR
-//#define debugIRCalib
+#define debugIR
+#define debugIRCalib
 //#define debugBT
 //#define debugMotor
 //#define debugPID
@@ -140,7 +140,7 @@ void loop() {
     calibrateIRS();
 
   if (!digitalRead(button2)) {
-    //delay(1500);
+    delay(1500);
     highSpeed = 225;
   }
 
@@ -258,18 +258,30 @@ void loop() {
     Serial.printf("%d\n", deflection);
 #endif
     if ( abs(deflection) < 1000 && abs(deflection) >= slowdown_thresh ) {
+     
       if (state) {
       
-        ledcWriteChannel(leftMotorChannel, 135);
+        ledcWriteChannel(leftMotorChannel, 145);
         digitalWrite(leftMotorIN, LOW);
         digitalWrite(leftMotorIN2, HIGH);
-        ledcWriteChannel(rightMotorChannel, 135);
+        ledcWriteChannel(rightMotorChannel, 145);
         digitalWrite(rightMotorIN, LOW);
         digitalWrite(rightMotorIN2, HIGH);
         delay(25);
       }
       baseSpeed = originalBase - slowdown_speed;
       highSpeed = originalHigh - slowdown_speed;
+      /*
+      if(abs(linePosition) <= 40){
+        
+      if(deflection<0)
+        linePosition = -2000;
+      else
+        linePosition = 2000;
+        
+        }
+        */
+      
       digitalWrite(debugLed, HIGH);
       state = false;
     }
