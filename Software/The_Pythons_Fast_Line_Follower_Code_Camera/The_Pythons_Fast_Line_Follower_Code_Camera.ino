@@ -11,13 +11,13 @@ int IR2 = 40;
 int IR3 = 30;
 int IR4 = 20;
 int IR5 = 10;
-int IR6 = 3;
+int IR6 = 5;
 int sensorWeights[numSensors] = { -IR1, -IR2, -IR3, -IR4, -IR5, -IR6, 0, IR6, IR5, IR4, IR3, IR2, IR1};
 
 /***** PID constants *****/
 float Kp = 10; // Proportional gain
 float Ki = 0.0; // Integral gain
-float Kd = 250; // Derivative gain
+float Kd = 100; // Derivative gain
 
 /***** PID variables *****/
 long lastPosition = 0;
@@ -44,22 +44,22 @@ int highSpeed = 0; //240
 int originalBase = baseSpeed;
 int originalHigh = highSpeed;
 
-#define button 5
-#define button2 17
+#define button 17
+#define button2 5
 #define debugLed 9
 
 /***** Camera Variables *****/
-int slowdown_thresh = 40;
-int slowdown_speed = 10;
-int speedup_thresh = 20;
-int speedup_speed = 10; //35
+int slowdown_thresh = 35;
+int slowdown_speed = 0;
+int speedup_thresh = 10;
+int speedup_speed = 15; //35
 
 bool state = true;
 
 // Uncomment to enable prints
 //#define debug         //Uncomment this line for lines below to work
-#define debugIR
-#define debugIRCalib
+//#define debugIR
+//#define debugIRCalib
 //#define debugBT
 //#define debugMotor
 //#define debugPID
@@ -123,7 +123,8 @@ void setup() {
   //  delay(1000);
 
   calibrateIRS();
-
+//delay(5000);
+  //  highSpeed = 220;
 }
 
 void loop() {
@@ -141,7 +142,7 @@ void loop() {
 
   if (!digitalRead(button2)) {
     delay(1500);
-    highSpeed = 225;
+    highSpeed = 220;
   }
 
 
@@ -267,7 +268,7 @@ void loop() {
         ledcWriteChannel(rightMotorChannel, 145);
         digitalWrite(rightMotorIN, LOW);
         digitalWrite(rightMotorIN2, HIGH);
-        delay(25);
+        delay(35);
       }
       baseSpeed = originalBase - slowdown_speed;
       highSpeed = originalHigh - slowdown_speed;

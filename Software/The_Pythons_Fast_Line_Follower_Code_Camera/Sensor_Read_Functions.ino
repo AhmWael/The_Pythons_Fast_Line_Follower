@@ -28,7 +28,7 @@ long readSensors() {
 #if defined(debug) && defined(debugIR)
     Serial.printf("half threshold[%d]: %d : %d : -> %d\n", i, sensorOffsets[i][0], sensorOffsets[i][1], sensorValues[i]);
 #endif
-    if (sensorValues[i] >= 550) {
+    if (sensorValues[i] >= 580) {
       flagL = 1;
       weightedSum += sensorWeights[i];
       break;
@@ -43,7 +43,7 @@ long readSensors() {
 #if defined(debug) && defined(debugIR)
     Serial.printf("half threshold[%d]: %d : %d : -> %d\n", i, sensorOffsets[i][0], sensorOffsets[i][1], sensorValues[i]);
 #endif
-    if (sensorValues[i] >= 550) {
+    if (sensorValues[i] >= 580) {
       flagR = 1;
       weightedSum += sensorWeights[i];
       break;
