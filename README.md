@@ -13,6 +13,13 @@
 
 This repository contains the design assets and control software for a high-speed autonomous line-following robot. It brings together mechanical CAD, electrical schematics and PCB files, Arduino firmware, camera-based line-following code, and a Bluetooth control application.
 
+## Highlights
+
+- PID-based steering and motor control
+- Sensor, camera, and hybrid line-following firmware variants
+- Dedicated movement, sensing, and control modules for Arduino
+- Mechanical and PCB design files alongside the operational software
+
 ## Project Areas
 
 | Area | Contents |
